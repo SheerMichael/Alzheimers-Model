@@ -13,7 +13,7 @@ class AlzheimersPredictor:
         
         # Define feature columns in the correct order expected by the model
         self.feature_columns = [
-            'Age', 'Gender', 'Ethnicity', 'EducationLevel', 'BMI', 'Smoking',
+            'Age', 'Gender', 'EducationLevel', 'BMI', 'Smoking',
             'AlcoholConsumption', 'PhysicalActivity', 'DietQuality', 'SleepQuality',
             'FamilyHistoryAlzheimers', 'CardiovascularDisease', 'Diabetes', 'Depression',
             'HeadInjury', 'Hypertension', 'SystolicBP', 'DiastolicBP', 'CholesterolTotal',
@@ -36,7 +36,7 @@ class AlzheimersPredictor:
             settings.BASE_DIR, 
             'ml', 
             'model_data', 
-            'alzheimers_k_nearest_neighbors_model.pkl'
+            'alzheimers_k-nearest_neighbors_model.pkl'
         )
         
         try:
@@ -55,7 +55,6 @@ class AlzheimersPredictor:
             data_dict = {
                 'Age': input_data.age,
                 'Gender': self._encode_gender(input_data.gender),
-                'Ethnicity': input_data.ethnicity,
                 'EducationLevel': input_data.education_level,
                 'BMI': input_data.bmi,
                 'Smoking': int(input_data.smoking),

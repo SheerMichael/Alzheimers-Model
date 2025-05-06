@@ -16,10 +16,10 @@ class AlzheimersData(models.Model):
     ]
     
     # Basic Information
-    patient_id = models.CharField(max_length=50, blank=True)
+    # patient_id = models.CharField(max_length=50, blank=True)
     age = models.IntegerField()
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
-    ethnicity = models.CharField(max_length=50, blank=True)
+    # ethnicity = models.CharField(max_length=50, blank=True)
     education_level = models.IntegerField(help_text="Years of education")
     bmi = models.FloatField(verbose_name="BMI")
     
@@ -62,7 +62,7 @@ class AlzheimersData(models.Model):
     prediction = models.CharField(max_length=20, blank=True)
     prediction_probability = models.FloatField(null=True, blank=True)
     actual_diagnosis = models.CharField(max_length=10, choices=DIAGNOSIS_CHOICES, blank=True, null=True)
-    doctor_in_charge = models.CharField(max_length=100, blank=True)
+    # doctor_in_charge = models.CharField(max_length=100, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
