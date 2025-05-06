@@ -1,77 +1,103 @@
-# alzheimers_app/views.py
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from .forms import AlzheimersForm
-from .models import PredictionResult
-from ml.predictor import predict
+from django.views import View
+from django.views.generic import ListView, DetailView
+from django.http import JsonResponse
 
-def home(request):
-    """Home page view"""
-    return render(request, 'alzheimers_app/home.html')
+from .models import AlzheimersData
+from .forms import AlzheimersDataForm
+from .predictor import AlzheimersPredictor
 
-def prediction_form(request):
-    """View for the prediction form and results"""
-    if request.method == 'POST':
-        form = AlzheimersForm(request.POST)
+class AlzheimersInputView(View):
+    """View for inputting patient data and making predictions"""
+    
+    template_name = 'ml/input_form.html'
+    
+    def get(self, request):
+        form = AlzheimersDataForm()
+        return render(request, self.template_name, {'form': form})
+    
+    def post(self, request):
+        form = AlzheimersDataForm(request.POST)
         if form.is_valid():
-            # Extract data from form
-            age = form.cleaned_data['age']
-            gender = int(form.cleaned_data['gender'])
-            education = form.cleaned_data['education']
-            mmse = form.cleaned_data['mmse']
-            
-            # Create feature array (update to match your model's expected features)
-            features = [age, gender, education, mmse]
+            # Save form but don't commit to database yet
+            instance = form.save(commit=False)
             
             try:
-                # Get prediction
-                result = predict(features)
+                # Make prediction
+                predictor = AlzheimersPredictor()
+                result = predictor.predict(instance)
                 
-                # Interpret prediction
-                prediction = result.get('prediction')
-                probability = result.get('probability')
+                # Update instance with prediction results
+                instance.prediction = result['prediction']
+                instance.prediction_probability = result.get('probability')
                 
-                # Save to database (optional)
-                PredictionResult.objects.create(
-                    age=age,
-                    gender=gender,
-                    education=education,
-                    mmse=mmse,
-                    prediction=prediction,
-                    probability=probability if probability else None
-                )
+                # Save to database
+                instance.save()
                 
-                # Map prediction code to meaningful label
-                prediction_labels = {
-                    0: "Non-Demented",
-                    1: "Mild Dementia", 
-                    2: "Moderate Dementia",
-                    3: "Severe Dementia"
-                }
-                prediction_label = prediction_labels.get(prediction, f"Unknown ({prediction})")
+                # Success message
+                messages.success(request, f"Prediction complete: {result['prediction']}")
                 
-                # Pass results to template
-                return render(request, 'alzheimers_app/result.html', {
-                    'prediction': prediction,
-                    'prediction_label': prediction_label,
-                    'probability': probability,
-                    'input_data': {
-                        'Age': age,
-                        'Gender': 'Male' if gender == 1 else 'Female',
-                        'Education': education,
-                        'MMSE Score': mmse
-                    }
-                })
-                
+                # Redirect to result page
+                return redirect('alzheimers_result', pk=instance.pk)
+            
             except Exception as e:
                 messages.error(request, f"Prediction error: {str(e)}")
-                return render(request, 'alzheimers_app/prediction_form.html', {'form': form})
-    else:
-        form = AlzheimersForm()
-    
-    return render(request, 'alzheimers_app/prediction_form.html', {'form': form})
+                return render(request, self.template_name, {'form': form, 'error': str(e)})
+        else:
+            return render(request, self.template_name, {'form': form})
 
-def history(request):
-    """View for prediction history"""
-    predictions = PredictionResult.objects.all().order_by('-created_at')
-    return render(request, 'alzheimers_app/history.html', {'predictions': predictions})
+class AlzheimersResultView(DetailView):
+    """View for displaying prediction results"""
+    
+    model = AlzheimersData
+    template_name = 'ml/result.html'
+    context_object_name = 'result'
+
+class AlzheimersHistoryView(ListView):
+    """View for displaying history of predictions"""
+    
+    model = AlzheimersData
+    template_name = 'ml/history.html'
+    context_object_name = 'predictions'
+    ordering = ['-created_at']
+    paginate_by = 10
+
+class AlzheimersAPIView(View):
+    """API view for making predictions programmatically"""
+    
+    def post(self, request):
+        try:
+            # Get data from request
+            data = request.POST.dict()
+            
+            # Convert boolean fields from string to actual boolean
+            boolean_fields = [
+                'smoking', 'family_history_alzheimers', 'cardiovascular_disease',
+                'diabetes', 'depression', 'head_injury', 'hypertension',
+                'memory_complaints', 'behavioral_problems', 'confusion',
+                'disorientation', 'personality_changes', 'difficulty_completing_tasks',
+                'forgetfulness'
+            ]
+            
+            for field in boolean_fields:
+                if field in data:
+                    data[field] = data[field].lower() in ['true', '1', 'yes', 'y']
+            
+            # Make prediction
+            predictor = AlzheimersPredictor()
+            result = predictor.predict(data)
+            
+            # Return result as JSON
+            return JsonResponse({
+                'success': True,
+                'prediction': result['prediction'],
+                'probability': result.get('probability'),
+                'timestamp': timezone.now().isoformat()
+            })
+        
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            }, status=400)
