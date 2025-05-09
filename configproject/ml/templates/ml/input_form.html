@@ -1,16 +1,32 @@
-{% extends "base.html" %}
-
-{% block title %}MCI Input Form{% endblock %}
-
+{% extends "base.html" %} {% block title %}MCI Input Form{% endblock %} 
 {% block content %}
-  <form method="post" action="{% url 'ml:prediction_form' %}">
-    {% csrf_token %}
-    {{ form.as_p }}
-
-    {% if form.non_field_errors %}
-      <div class="error">{{ form.non_field_errors }}</div>
-    {% endif %}
-
-    <button type="submit">Predict</button>
-  </form>
+<section class="guide">
+  <h2>Guidance for inputs</h2>
+  <ul>
+    <li><strong>Age:</strong> 60–90</li>
+    <li><strong>Gender:</strong> 0=Male, 1=Female</li>
+    <li><strong>Ethnicity:</strong> 0=Caucasian, 1=AA, 2=Asian, 3=Other</li>
+    <li>
+      <strong>EducationLevel:</strong> 0=None, 1=HS, 2=Bachelor's, 3=Higher
+    </li>
+    <li><strong>BMI:</strong> 15–40</li>
+    <li><strong>Smoking:</strong> 0=No, 1=Yes</li>
+    <li><strong>AlcoholConsumption:</strong> 0–20 units/week</li>
+    <li><strong>PhysicalActivity:</strong> 0–10 hrs/week</li>
+    <li><strong>DietQuality:</strong> 0–10</li>
+    <li><strong>SleepQuality:</strong> 4–10</li>
+    <li><strong>FamilyHistoryAlzheimers:</strong> 0=No, 1=Yes</li>
+    <li><strong>CardiovascularDisease:</strong> 0=No, 1=Yes</li>
+    <li><strong>Diabetes:</strong> 0=No, 1=Yes</li>
+    <li><strong>Depression:</strong> 0=No, 1=Yes</li>
+    <li><strong>HeadInjury:</strong> 0=No, 1=Yes</li>
+    <li><strong>Hypertension:</strong> 0=No, 1=Yes</li>
+  </ul>
+</section>
+<form method="post">
+  {% csrf_token %} {{ form.as_p }} {% if form.non_field_errors %}
+  <div class="error">{{ form.non_field_errors }}</div>
+  {% endif %}
+  <button type="submit">Predict</button>
+</form>
 {% endblock %}
