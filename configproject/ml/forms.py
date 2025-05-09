@@ -1,48 +1,80 @@
 from django import forms
-from .models import AlzheimersData
 
-class AlzheimersDataForm(forms.ModelForm):
-    """Form for inputting patient data for Alzheimer's prediction"""
-    
-    # Override some fields for better UX (all fields required by default)
-    ACTIVITY_CHOICES = [
-        ('Low', 'Low'),
-        ('Moderate', 'Moderate'),
-        ('High', 'High'),
+class MCIDetectionForm(forms.Form):
+    # Demographics
+    Age = forms.IntegerField(min_value=0, max_value=120, required=True)
+    GENDER_CHOICES = [
+        (0, 'Female'),
+        (1, 'Male'),
     ]
+    Gender = forms.ChoiceField(choices=GENDER_CHOICES, required=True)
+    
+    # Education
+    EDUCATION_CHOICES = [
+        (0, 'No formal education'),
+        (1, 'Primary school'),
+        (2, 'High school'),
+        (3, 'Bachelor\'s degree'),
+        (4, 'Master\'s degree or higher'),
+    ]
+    EducationLevel = forms.ChoiceField(choices=EDUCATION_CHOICES, required=True)
+    
+    # Physical measurements
+    BMI = forms.FloatField(min_value=10, max_value=50, required=True, 
+                          help_text='Body Mass Index')
+    
+    # Lifestyle factors
+    SMOKING_CHOICES = [
+        (0, 'Never smoked'),
+        (1, 'Former smoker'),
+        (2, 'Current smoker'),
+    ]
+    Smoking = forms.ChoiceField(choices=SMOKING_CHOICES, required=True)
+    
+    ALCOHOL_CHOICES = [
+        (0, 'Never'),
+        (1, 'Occasionally'),
+        (2, 'Moderate'),
+        (3, 'Heavy'),
+    ]
+    AlcoholConsumption = forms.ChoiceField(choices=ALCOHOL_CHOICES, required=True)
+    
+    ACTIVITY_CHOICES = [
+        (0, 'Sedentary'),
+        (1, 'Light'),
+        (2, 'Moderate'),
+        (3, 'Vigorous'),
+    ]
+    PhysicalActivity = forms.ChoiceField(choices=ACTIVITY_CHOICES, required=True)
     
     QUALITY_CHOICES = [
-        ('Poor', 'Poor'),
-        ('Fair', 'Fair'),
-        ('Good', 'Good'),
-        ('Excellent', 'Excellent'),
+        (0, 'Poor'),
+        (1, 'Fair'),
+        (2, 'Good'),
+        (3, 'Excellent'),
     ]
+    DietQuality = forms.ChoiceField(choices=QUALITY_CHOICES, required=True)
+    SleepQuality = forms.ChoiceField(choices=QUALITY_CHOICES, required=True)
     
-    # Lifestyle fields with user-friendly inputs, explicitly required
-    physical_activity = forms.ChoiceField(choices=ACTIVITY_CHOICES, required=True)
-    diet_quality = forms.ChoiceField(choices=QUALITY_CHOICES, required=True)
-    sleep_quality = forms.ChoiceField(choices=QUALITY_CHOICES, required=True)
-    alcohol_consumption = forms.ChoiceField(
-        choices=[('None','None'),('Occasional','Occasional'),('Moderate','Moderate'),('Heavy','Heavy')],
-        required=True
-    )
+    # Medical history - binary choices
+    BINARY_CHOICES = [
+        (0, 'No'),
+        (1, 'Yes'),
+    ]
+    FamilyHistoryAlzheimers = forms.ChoiceField(choices=BINARY_CHOICES, required=True,
+                                              label='Family History of Alzheimer\'s')
+    CardiovascularDisease = forms.ChoiceField(choices=BINARY_CHOICES, required=True)
+    Diabetes = forms.ChoiceField(choices=BINARY_CHOICES, required=True)
+    Depression = forms.ChoiceField(choices=BINARY_CHOICES, required=True)
+    HeadInjury = forms.ChoiceField(choices=BINARY_CHOICES, required=True,
+                                 label='History of Head Injury')
+    Hypertension = forms.ChoiceField(choices=BINARY_CHOICES, required=True)
     
-    class Meta:
-        model = AlzheimersData
-        exclude = ['prediction', 'prediction_probability', 'created_at']
-        widgets = {
-            'age': forms.NumberInput(attrs={'min': 0, 'max': 120}),
-            'education_level': forms.NumberInput(attrs={'min': 0, 'max': 30}),
-            'bmi': forms.NumberInput(attrs={'step': '0.1', 'min': 10, 'max': 50}),
-            'systolic_bp': forms.NumberInput(attrs={'min': 80, 'max': 220}),
-            'diastolic_bp': forms.NumberInput(attrs={'min': 40, 'max': 120}),
-            'cholesterol_total': forms.NumberInput(attrs={'step': '0.1', 'min': 100, 'max': 500}),
-            'cholesterol_ldl': forms.NumberInput(attrs={'step': '0.1', 'min': 0, 'max': 300}),
-            'cholesterol_hdl': forms.NumberInput(attrs={'step': '0.1', 'min': 0, 'max': 100}),
-            'cholesterol_triglycerides': forms.NumberInput(attrs={'step': '0.1', 'min': 0, 'max': 1000}),
-            'mmse': forms.NumberInput(attrs={'min': 0, 'max': 30}),
-            'functional_assessment': forms.NumberInput(attrs={'min': 0, 'max': 100}),
-            'adl': forms.NumberInput(attrs={'min': 0, 'max': 100}),
-        }
-
-    # No __init__ override needed: ModelForm will respect model "blank=False" for required fields
+    def clean(self):
+        """Convert string values to appropriate numeric types for the model"""
+        cleaned_data = super().clean()
+        for field in self.fields:
+            if field in cleaned_data and field != 'Age' and field != 'BMI':
+                cleaned_data[field] = int(cleaned_data[field])
+        
+        return cleaned_data

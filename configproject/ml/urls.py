@@ -1,9 +1,9 @@
 from django.urls import path
 from . import views
 
+app_name = 'ml'
+
 urlpatterns = [
-    path('', views.AlzheimersInputView.as_view(), name='alzheimers_input'),
-    path('result/<int:pk>/', views.AlzheimersResultView.as_view(), name='alzheimers_result'),
-    path('history/', views.AlzheimersHistoryView.as_view(), name='alzheimers_history'),
-    path('api/predict/', views.AlzheimersAPIView.as_view(), name='alzheimers_api'),
+    path('', views.PredictionFormView.as_view(), name='prediction_form'),
+    path('result/', views.PredictionResultView.as_view(), name='prediction_result'),
 ]
