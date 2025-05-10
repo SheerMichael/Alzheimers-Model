@@ -4,7 +4,7 @@
 <table class="table table-striped">
   <thead>
     <tr>
-      <th>ID</th><th>User</th><th>Date</th><th>Result</th><th></th>
+      <th>ID</th><th>User</th><th>Date</th><th>Result</th><th>Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -19,7 +19,9 @@
         </span>
       </td>
       <td>
-        <a href="{% url 'assessment_detail' a.pk %}">View</a>
+
+        <a class="btn btn-sm btn-outline-danger ms-2" 
+           href="{% url 'assessment_delete' a.pk %}">Delete</a>
       </td>
     </tr>
     {% empty %}
@@ -27,8 +29,9 @@
     {% endfor %}
   </tbody>
 </table>
+
 {% if is_paginated %}
-  <nav>
+  <nav class="d-flex justify-content-between align-items-center">
     {% if page_obj.has_previous %}
       <a class="btn btn-outline-primary" href="?page={{ page_obj.previous_page_number }}">Prev</a>
     {% endif %}
