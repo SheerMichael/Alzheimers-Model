@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block page_title %}Assessment History{% endblock %}
+{% block content %}
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>ID</th><th>User</th><th>Date</th><th>Result</th><th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for a in assessments %}
+    <tr>
+      <td>{{ a.id }}</td>
+      <td>{{ a.user.username }}</td>
+      <td>{{ a.date|date:"Y-m-d H:i" }}</td>
+      <td>
+        <span class="badge {{ a.result|yesno:'bg-danger,bg-success' }}">
+          {{ a.result|yesno:'MCI,No MCI' }}
+        </span>
+      </td>
+      <td>
+        <a href="{% url 'assessment_detail' a.pk %}">View</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5">No assessments yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% if is_paginated %}
+  <nav>
+    {% if page_obj.has_previous %}
+      <a class="btn btn-outline-primary" href="?page={{ page_obj.previous_page_number }}">Prev</a>
+    {% endif %}
+    <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+      <a class="btn btn-outline-primary" href="?page={{ page_obj.next_page_number }}">Next</a>
+    {% endif %}
+  </nav>
+{% endif %}
+{% endblock %}

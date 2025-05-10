@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block page_title %}Delete Assessment{% endblock %}
+{% block content %}
+<p>Are you sure you want to delete assessment #{{ object.id }}?</p>
+<form method="post">{% csrf_token %}
+  <button class="btn btn-danger">Yes, delete</button>
+  <a class="btn btn-secondary" href="{% url 'assessment_history' %}">Cancel</a>
+</form>
+{% endblock %}

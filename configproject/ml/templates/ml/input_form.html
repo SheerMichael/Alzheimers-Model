@@ -1,32 +1,276 @@
-{% extends "base.html" %} {% block title %}MCI Input Form{% endblock %} 
+{% extends "base.html" %}
+
+{% block title %}MCI Assessment{% endblock %}
+
+{% block page_title %}MCI Assessment Form{% endblock %}
+
 {% block content %}
-<section class="guide">
-  <h2>Guidance for inputs</h2>
-  <ul>
-    <li><strong>Age:</strong> 60–90</li>
-    <li><strong>Gender:</strong> 0=Male, 1=Female</li>
-    <li><strong>Ethnicity:</strong> 0=Caucasian, 1=AA, 2=Asian, 3=Other</li>
-    <li>
-      <strong>EducationLevel:</strong> 0=None, 1=HS, 2=Bachelor's, 3=Higher
-    </li>
-    <li><strong>BMI:</strong> 15–40</li>
-    <li><strong>Smoking:</strong> 0=No, 1=Yes</li>
-    <li><strong>AlcoholConsumption:</strong> 0–20 units/week</li>
-    <li><strong>PhysicalActivity:</strong> 0–10 hrs/week</li>
-    <li><strong>DietQuality:</strong> 0–10</li>
-    <li><strong>SleepQuality:</strong> 4–10</li>
-    <li><strong>FamilyHistoryAlzheimers:</strong> 0=No, 1=Yes</li>
-    <li><strong>CardiovascularDisease:</strong> 0=No, 1=Yes</li>
-    <li><strong>Diabetes:</strong> 0=No, 1=Yes</li>
-    <li><strong>Depression:</strong> 0=No, 1=Yes</li>
-    <li><strong>HeadInjury:</strong> 0=No, 1=Yes</li>
-    <li><strong>Hypertension:</strong> 0=No, 1=Yes</li>
-  </ul>
-</section>
-<form method="post">
-  {% csrf_token %} {{ form.as_p }} {% if form.non_field_errors %}
-  <div class="error">{{ form.non_field_errors }}</div>
-  {% endif %}
-  <button type="submit">Predict</button>
-</form>
+<div class="row">
+    <div class="col-lg-4 mb-4 mb-lg-0">
+        <div class="card guide">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Input Guidelines</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h6>Demographics</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>Age:</strong> 60–90</li>
+                            <li><strong>Gender:</strong> Male/Female</li>
+                            <li><strong>Ethnicity:</strong> Various options</li>
+                            <li><strong>Education:</strong> None to Higher</li>
+                        </ul>
+                        
+                        <h6>Lifestyle</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>BMI:</strong> 15–40</li>
+                            <li><strong>Smoking:</strong> Yes/No</li>
+                            <li><strong>Alcohol:</strong> 0–20 units/week</li>
+                            <li><strong>Physical Activity:</strong> 0–10 hrs/week</li>
+                        </ul>
+                    </div>
+                    <div class="col-sm-6">
+                        <h6>Health Metrics</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>Diet Quality:</strong> 0–10</li>
+                            <li><strong>Sleep Quality:</strong> 4–10</li>
+                        </ul>
+                        
+                        <h6>Medical History</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>Family History:</strong> Yes/No</li>
+                            <li><strong>Cardiovascular:</strong> Yes/No</li>
+                            <li><strong>Diabetes:</strong> Yes/No</li>
+                            <li><strong>Depression:</strong> Yes/No</li>
+                            <li><strong>Head Injury:</strong> Yes/No</li>
+                            <li><strong>Hypertension:</strong> Yes/No</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Patient Information</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+                    
+                    <h5 class="mb-3">Demographics</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="{{ form.Age.id_for_label }}" class="form-label">Age</label>
+                                {{ form.Age.errors }}
+                                <input type="number" name="{{ form.Age.name }}" id="{{ form.Age.id_for_label }}" 
+                                       class="form-control {% if form.Age.errors %}is-invalid{% endif %}" 
+                                       min="60" max="90" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="{{ form.Gender.id_for_label }}" class="form-label">Gender</label>
+                                {{ form.Gender.errors }}
+                                <select name="{{ form.Gender.name }}" id="{{ form.Gender.id_for_label }}" 
+                                        class="form-select {% if form.Gender.errors %}is-invalid{% endif %}" required>
+                                    <option value="">Select</option>
+                                    <option value="0">Male</option>
+                                    <option value="1">Female</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="{{ form.Ethnicity.id_for_label }}" class="form-label">Ethnicity</label>
+                                {{ form.Ethnicity.errors }}
+                                <select name="{{ form.Ethnicity.name }}" id="{{ form.Ethnicity.id_for_label }}" 
+                                        class="form-select {% if form.Ethnicity.errors %}is-invalid{% endif %}" required>
+                                    <option value="">Select</option>
+                                    <option value="0">Caucasian</option>
+                                    <option value="1">African American</option>
+                                    <option value="2">Asian</option>
+                                    <option value="3">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="{{ form.EducationLevel.id_for_label }}" class="form-label">Education Level</label>
+                                {{ form.EducationLevel.errors }}
+                                <select name="{{ form.EducationLevel.name }}" id="{{ form.EducationLevel.id_for_label }}" 
+                                        class="form-select {% if form.EducationLevel.errors %}is-invalid{% endif %}" required>
+                                    <option value="">Select</option>
+                                    <option value="0">None</option>
+                                    <option value="1">High School</option>
+                                    <option value="2">Bachelor's</option>
+                                    <option value="3">Higher</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="{{ form.BMI.id_for_label }}" class="form-label">BMI</label>
+                                {{ form.BMI.errors }}
+                                <input type="number" name="{{ form.BMI.name }}" id="{{ form.BMI.id_for_label }}" 
+                                       class="form-control {% if form.BMI.errors %}is-invalid{% endif %}" 
+                                       min="15" max="40" step="0.1" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="{{ form.Smoking.id_for_label }}" class="form-label">Smoking</label>
+                                {{ form.Smoking.errors }}
+                                <select name="{{ form.Smoking.name }}" id="{{ form.Smoking.id_for_label }}" 
+                                        class="form-select {% if form.Smoking.errors %}is-invalid{% endif %}" required>
+                                    <option value="">Select</option>
+                                    <option value="0">No</option>
+                                    <option value="1">Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h5 class="mb-3">Lifestyle & Health Metrics</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="{{ form.AlcoholConsumption.id_for_label }}" class="form-label">Alcohol Consumption (units/week)</label>
+                                {{ form.AlcoholConsumption.errors }}
+                                <input type="number" name="{{ form.AlcoholConsumption.name }}" id="{{ form.AlcoholConsumption.id_for_label }}" 
+                                       class="form-control {% if form.AlcoholConsumption.errors %}is-invalid{% endif %}" 
+                                       min="0" max="20" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="{{ form.PhysicalActivity.id_for_label }}" class="form-label">Physical Activity (hrs/week)</label>
+                                {{ form.PhysicalActivity.errors }}
+                                <input type="number" name="{{ form.PhysicalActivity.name }}" id="{{ form.PhysicalActivity.id_for_label }}" 
+                                       class="form-control {% if form.PhysicalActivity.errors %}is-invalid{% endif %}" 
+                                       min="0" max="10" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="{{ form.DietQuality.id_for_label }}" class="form-label">Diet Quality (0-10)</label>
+                                {{ form.DietQuality.errors }}
+                                <input type="number" name="{{ form.DietQuality.name }}" id="{{ form.DietQuality.id_for_label }}" 
+                                       class="form-control {% if form.DietQuality.errors %}is-invalid{% endif %}" 
+                                       min="0" max="10" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="{{ form.SleepQuality.id_for_label }}" class="form-label">Sleep Quality (4-10)</label>
+                                {{ form.SleepQuality.errors }}
+                                <input type="number" name="{{ form.SleepQuality.name }}" id="{{ form.SleepQuality.id_for_label }}" 
+                                       class="form-control {% if form.SleepQuality.errors %}is-invalid{% endif %}" 
+                                       min="4" max="10" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h5 class="mb-3">Medical History</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="{{ form.FamilyHistoryAlzheimers.id_for_label }}" class="form-label">Family History of Alzheimer's</label>
+                                {{ form.FamilyHistoryAlzheimers.errors }}
+                                <select name="{{ form.FamilyHistoryAlzheimers.name }}" id="{{ form.FamilyHistoryAlzheimers.id_for_label }}" 
+                                        class="form-select {% if form.FamilyHistoryAlzheimers.errors %}is-invalid{% endif %}" required>
+                                    <option value="">Select</option>
+                                    <option value="0">No</option>
+                                    <option value="1">Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="{{ form.CardiovascularDisease.id_for_label }}" class="form-label">Cardiovascular Disease</label>
+                                {{ form.CardiovascularDisease.errors }}
+                                <select name="{{ form.CardiovascularDisease.name }}" id="{{ form.CardiovascularDisease.id_for_label }}" 
+                                        class="form-select {% if form.CardiovascularDisease.errors %}is-invalid{% endif %}" required>
+                                    <option value="">Select</option>
+                                    <option value="0">No</option>
+                                    <option value="1">Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="{{ form.Diabetes.id_for_label }}" class="form-label">Diabetes</label>
+                                {{ form.Diabetes.errors }}
+                                <select name="{{ form.Diabetes.name }}" id="{{ form.Diabetes.id_for_label }}" 
+                                        class="form-select {% if form.Diabetes.errors %}is-invalid{% endif %}" required>
+                                    <option value="">Select</option>
+                                    <option value="0">No</option>
+                                    <option value="1">Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="{{ form.Depression.id_for_label }}" class="form-label">Depression</label>
+                                {{ form.Depression.errors }}
+                                <select name="{{ form.Depression.name }}" id="{{ form.Depression.id_for_label }}" 
+                                        class="form-select {% if form.Depression.errors %}is-invalid{% endif %}" required>
+                                    <option value="">Select</option>
+                                    <option value="0">No</option>
+                                    <option value="1">Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="{{ form.HeadInjury.id_for_label }}" class="form-label">Head Injury</label>
+                                {{ form.HeadInjury.errors }}
+                                <select name="{{ form.HeadInjury.name }}" id="{{ form.HeadInjury.id_for_label }}" 
+                                        class="form-select {% if form.HeadInjury.errors %}is-invalid{% endif %}" required>
+                                    <option value="">Select</option>
+                                    <option value="0">No</option>
+                                    <option value="1">Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="{{ form.Hypertension.id_for_label }}" class="form-label">Hypertension</label>
+                                {{ form.Hypertension.errors }}
+                                <select name="{{ form.Hypertension.name }}" id="{{ form.Hypertension.id_for_label }}" 
+                                        class="form-select {% if form.Hypertension.errors %}is-invalid{% endif %}" required>
+                                    <option value="">Select</option>
+                                    <option value="0">No</option>
+                                    <option value="1">Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">Run Assessment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -5,9 +5,10 @@ name = "pypi"
 
 [packages]
 django = "*"
-pymysql = "*"
 scikit-learn = "*"
 pandas = "*"
+imblearn = "*"
+pymysql = "*"
 
 [dev-packages]
 

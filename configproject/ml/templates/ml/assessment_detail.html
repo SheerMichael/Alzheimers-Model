@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block page_title %}Assessment #{{ assessment.id }}{% endblock %}
+{% block content %}
+<dl class="row">
+  <dt class="col-sm-3">Date</dt><dd class="col-sm-9">{{ assessment.date }}</dd>
+  <dt class="col-sm-3">User</dt><dd class="col-sm-9">{{ assessment.user.username }}</dd>
+  <dt class="col-sm-3">Age</dt><dd class="col-sm-9">{{ assessment.age }}</dd>
+  <dt class="col-sm-3">Gender</dt><dd class="col-sm-9">{{ assessment.get_gender_display }}</dd>
+  <dt class="col-sm-3">Result</dt>
+    <dd class="col-sm-9">{{ assessment.result|yesno:"MCI detected,No MCI" }}</dd>
+  <dt class="col-sm-3">Probability</dt>
+    <dd class="col-sm-9">{{ assessment.probability|floatformat:2 }}</dd>
+  <dt class="col-sm-3">All Data</dt>
+    <dd class="col-sm-9"><pre>{{ assessment.data|json_script:"data" }}</pre></dd>
+</dl>
+<a class="btn btn-secondary" href="{% url 'assessment_edit' assessment.pk %}">Edit</a>
+<a class="btn btn-danger" href="{% url 'assessment_delete' assessment.pk %}">Delete</a>
+{% endblock %}

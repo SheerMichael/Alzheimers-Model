@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Quick Stats</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <h2>{{ total_patients }}</h2>
+                            <p>Total Assessments</p>
+                        </div>
+                        <div class="col-6">
+                            <h2>{{ mci_count }}</h2>
+                            <p>MCI Detected</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'prediction_form' %}" class="btn btn-primary btn-lg btn-block mb-3">New Assessment</a>
+                    <a href="{% url 'admin:index' %}" class="btn btn-secondary btn-lg btn-block">Admin Panel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Recent Assessments</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Age</th>
+                                    <th>Gender</th>
+                                    <th>Result</th>
+                                    <th>Probability</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for assessment in recent_assessments %}
+                                <tr>
+                                    <td>{{ assessment.id }}</td>
+                                    <td>{{ assessment.age }}</td>
+                                    <td>{{ assessment.gender }}</td>
+                                    <td>
+                                        {% if assessment.result %}
+                                            <span class="badge bg-warning">MCI</span>
+                                        {% else %}
+                                            <span class="badge bg-success">No MCI</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ assessment.probability }}</td>
+                                    <td>{{ assessment.date }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center">No assessments recorded yet</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

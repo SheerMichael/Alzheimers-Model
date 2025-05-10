@@ -1,29 +1,10 @@
-# ml/admin.py
-
 from django.contrib import admin
-from .models import PredictionRecord
+from .models import Assessment
 
-@admin.register(PredictionRecord)
-class PredictionRecordAdmin(admin.ModelAdmin):
-    # make the timestamp read-only
-    readonly_fields = ('timestamp',)
-
-    # show columns that actually exist:
-    list_display = (
-        'user',
-        'Age',
-        'Gender',
-        'Ethnicity',
-        'result',
-        'probability',
-        'timestamp',
-    )
-    # filters on real model fields:
-    list_filter = (
-        'result',
-        'timestamp',
-        'Gender',
-        'Ethnicity',
-    )
-    # let you search by username
-    search_fields = ('user__username',)
+@admin.register(Assessment)
+class AssessmentAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'age', 'get_gender_display', 'result', 'probability', 'date')
+    list_filter = ('result', 'gender')
+    search_fields = ('user__username', 'user__email')
+    date_hierarchy = 'date'
+    readonly_fields = ('date', 'result', 'probability', 'data')

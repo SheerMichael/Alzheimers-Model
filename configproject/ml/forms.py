@@ -1,4 +1,5 @@
 from django import forms
+from .models import Assessment
 
 class MCIDetectionForm(forms.Form):
     # Demographics
